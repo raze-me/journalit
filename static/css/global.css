@@ -139,3 +139,40 @@ a:hover{
     background: var(--color-accent-hov);
     box-shadow: var(--shadow-md);
 }
+
+.btn-google{
+    background: var(--color-google);
+    color: #3c4043;
+    border: 1.5px solid var(--color-google-bd);
+    box-shadow: var(--shadow-md);
+    font-weight: 500;
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+}
+.btn-google:hover{
+    background: var(--color-google-hov);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-google svg{
+    flex-shrink: 0;
+}
+
+.divider{
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-ink-faint);
+    font-size: 0.8125rem;
+    margin: var(--space-4);
+}
+
+.divider::before,
+.divider::after{
+    content:'';
+    flex:1;
+    height: 1px;
+    background: var(--color-border);
+}
