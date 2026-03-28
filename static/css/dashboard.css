@@ -1,0 +1,99 @@
+body{
+    display: block;
+    padding: 0;
+    margin: 0;;
+    min-height: 100vh;
+}
+
+.dashboard-layout{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.dashboard-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0; 
+}
+
+.logo{
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.user-controls{
+    display: flex;
+    align-items: center;
+    gap: var(--color-ink-muted);
+}
+
+.btn-outline{
+    background: transparent;
+    border: 1.5px solid var(--color-border);
+    color: var(--color-ink-muted);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    cursor: pinter;
+    transition: all var(--transition);
+}
+
+.btn-outline:hover{
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.dashboard-main{
+    flex: 1;
+    padding: var(--space-6) var(--space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.calendar-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    animation: fadeIn 0.4s var(--ease-out) both;
+}
+
+ .current-month{
+    font-size: 2.25rem;
+    color: var(--color-ink);
+    letter-spacing: -0.01em;
+}
+
+.nav-btn{
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-btn:hover{
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+
