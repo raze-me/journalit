@@ -181,4 +181,47 @@ btnFullScreenEdition.addEventListener("click", ()=>{
     }
 });
 
+function triggerAutoSave(){
+    if(!currentDialogDateStr) return;
 
+    updateCounts(journalInput.value);
+    saveStatus.textContent = "Saving...";
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async() => {
+        const textVals = journalInput.value;
+        const moodVal = selectedMood;
+
+        await saveEntry(currentDialogDateStr, textVals, moodVal);
+        lastUpdated.textContent = `Last updated: ${new Date().toLocaleString([], {dateStyle: 'short', timeStyle: 'short'})}`;
+
+        if(textVals.trim() !== ""){
+            entryDates.set(currentDialogDateStr, {text: textVals, mood: moodVal});
+        }else{
+            entryDates.delete(currentDialogDateStr);
+        }
+        saveStatus.textContent = "Saved";
+
+        renderCalendar(currentMonth, currentYear);
+    }, 500);
+}
+
+journalInput.addEventListener("input", triggerAutoSave);
+document.querySelectorAll(".mood-btn").forEach(btn => {
+    btn.addEventListener("click", ()=>{
+        if(selectedMood !== btn.dataset.mood){
+            document.querySelectorAll(".mood-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            selectedMood = btn.dataset.mood;
+            triggerAutoSave();
+        }
+    });
+});
+
+entryDialog.addEventListener("click", (e) => {
+    if(e.target === entryDialog){
+        closeDialog();
+    }
+});
+
+renderCalendar(currentMonth, currentYear);
