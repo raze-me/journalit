@@ -194,29 +194,25 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            
+            <div class="dialog-body">
+                <div class="mood-selector" id="mood-selector">
+                    <button class="mood-btn" data-mood="happy" aria-label="Happy mood"><img src="{{url_for('static', filename='assests/happy.png')}}"></button>
+                    <button class="mood-btn active" data-mood="neutral" aria-label="Neutral mood"><img src="{{url_for('static', filename='assets/neutral.png')}}" alt="neutral" class="mood-icon"></button>
+                    <button class="mood-btn" data-mood="sad" aria-label="Sad mood"><img src="{{url_for('static', filename='assets/sad.png')}}" alt="sad" class="mood icon"></button>
+                    <button class="mood-btn" data-mood="angry" aria-label="Angry mood"><img src="{{url_for('static', filename='assets/angry.png')}}" alt="angry" class="mood-icon"></button>
+                </div>
+                <div class="journal-textarea font-serif" id="journal-input" contenteditable="true" data-placeholder="Start writing your thoughts here..."></div>
+            </div>
+            <div class="dialog-footer" style="justify-content:space-between; align-items: center;">
+                <span class="save-status font-serif" id="save-status" style="color: var(--color-ink-muted); font-size: 0.95rem; margin-left: var(--space-2);"></span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-outline" id="btn-fulscreen-editor">Open Full Editor</button>
+                    <button class="btn btn-primary" id="btn-done-entry">Done</button>
+                </div>
+            </div>
         </div>
     </div>
 
-
-
-    <div class="dialog-overlay" id="entry-dialog" aria-hidden="true">
-        <div class="dialog-card">
-            <div class="dialog-header">
-                <h3 class="dialog-title font-serif" if="dialog-date">Date</h3>
-                <button class="btn-icon" id="btn-close-dialog" aria-label="Close dialog">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            <div class="dialog-body">
-                <textarea class="journal-textarea font-serif" id="journal-input" placeholder="Start writing your thoughts here..."></textarea>
-            </div>
-            <div class="dialog-footer">
-                <button class="btn btn-outline" id="btn-cancel-entry">Cancel</button>
-                <button class="btn-save-entry">Save Entry</button>
-            </div>
-        </div>
-        </div>
         <script type="module" src="{{ url_for('static', filename='js/dashborad.js')}}"></script>
 </body>
 </html>
