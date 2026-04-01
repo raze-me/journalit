@@ -1,5 +1,7 @@
 import { onAuthReady, signOutUser } from "./auth.js";
 import { getAllEntries, saveEntry, getEntry } from "./db.js";
+import { initSidebar, refreshSidebar } from "./sidebar.js";
+import { initRightPanel, setRightPanelDate, clearRightPanelDate } from "./right-panel.js";
 
 const userWelcome = document.getElementById("user-welcome");
 const btnSignOut = document.getElementById("btn-sign-out");
@@ -37,6 +39,31 @@ onAuthReady(async (user) => {
     const datesData = await getAllEntries();
     entryDates = new Map(Object.entries(datesData));
     renderCalendar(currentMonth, currentYear);
+
+    initSidebar(entryDates, (year, month, day, dateStr) => {
+        currentMonth = month;
+        currentYear = year;
+        renderCalendar(currentMonth, currentYear);
+        selectDate(year, month, day, dateStr);
+    });
+    initRightPanel(entryDates);
+});
+
+async function selectDate(year, month, day, dateStr) {
+    document.querySelectorAll('.date-tablet').forEach(t => t.classList.remove('selected-tablet'));
+    const entryData = entryDates.get(dateStr) || null;
+    setRightPanelDate(dateStr, entryData);
+}
+
+window.addEventListener("rp-open-date", (e) => {
+    const dateStr = e.detail.dateStr;
+    const parts = dateStr.split('-');
+    openDialog(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), dateStr);
+});
+
+window.addEventListener("rp-clear", () => {
+    document.querySelectorAll('.date-tablet').forEach(t => t.classList.remove('selected-tablet'));
+    clearRightPanelDate();
 });
 
 btnSignOut.addEventListener("click", async () => {
@@ -82,10 +109,15 @@ function renderCalendar(month, year) {
             tablet.classList.add("has-entry");
             tablet.classList.add(`mood-${entryMeta.mood}`);
 
-            const moodEmojiMap = { happy: '😊', neutral: '😐', sad: '😔', angry: '😡' };
+            const moodEmojiMap = {
+                happy: '<img src="/static/assets/happy.png" class="mood-icon" alt="happy">',
+                neutral: '<img src="/static/assets/neutral.png" class="mood-icon" alt="neutral">',
+                sad: '<img src="/static/assets/sad.png" class="mood-icon" alt="sad">',
+                angry: '<img src="/static/assets/angry.png" class="mood-icon" alt="angry">'
+            };
             const emojiDiv = document.createElement("div");
             emojiDiv.className = "date-mood-indicator";
-            emojiDiv.textContent = moodEmojiMap[entryMeta.mood] || '😐';
+            emojiDiv.innerHTML = moodEmojiMap[entryMeta.mood] || '<img src="/static/assets/neutral.png" class="mood-icon" alt="neutral">';
             tablet.appendChild(emojiDiv);
         }
 
@@ -99,7 +131,9 @@ function renderCalendar(month, year) {
         tablet.appendChild(dateNum);
 
         tablet.addEventListener("click", () => {
-            openDialog(year, month, i, dateStr);
+            document.querySelectorAll('.date-tablet').forEach(t => t.classList.remove('selected-tablet'));
+            tablet.classList.add('selected-tablet');
+            selectDate(year, month, i, dateStr);
         });
 
         calendarGrid.appendChild(tablet);
@@ -126,9 +160,10 @@ nextMonthBtn.addEventListener("click", () => {
 
 let debounceTimer = null;
 
-function updateCounts(text) {
+function updateCounts(htmlString) {
+    const text = htmlString.replace(/<[^>]*>?/gm, ' ').replace(/&nbsp;/g, ' ').trim();
     const chars = text.length;
-    const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+    const words = text === "" ? 0 : text.split(/\s+/).length;
     wordCount.textContent = `${words} word${words === 1 ? '' : 's'}`;
     charCount.textContent = `${chars} character${chars === 1 ? '' : 's'}`;
 }
@@ -138,16 +173,16 @@ async function openDialog(year, month, day, dateStr) {
     const formattedDate = `${monthNames[month]} ${day}, ${year}`;
     dialogDateTitle.textContent = formattedDate;
 
-    journalInput.value = "Loading...";
-    journalInput.disabled = true;
+    journalInput.innerHTML = "Loading...";
+    journalInput.setAttribute("contenteditable", "false");
     saveStatus.textContent = "";
 
     entryDialog.classList.add("open");
     entryDialog.setAttribute("aria-hidden", "false");
 
     const entryData = await getEntry(dateStr);
-    journalInput.value = entryData.text;
-    journalInput.disabled = false;
+    journalInput.innerHTML = entryData.text;
+    journalInput.setAttribute("contenteditable", "true");
 
     selectedMood = entryData.mood;
     document.querySelectorAll(".mood-btn").forEach(btn => {
@@ -165,9 +200,11 @@ async function openDialog(year, month, day, dateStr) {
     } else {
         lastUpdated.textContent = "Last updated: Never";
     }
+
     setTimeout(() => journalInput.focus(), 300);
 }
-function closeDialog(){
+
+function closeDialog() {
     entryDialog.classList.remove("open");
     entryDialog.setAttribute("aria-hidden", "true");
 }
@@ -175,41 +212,50 @@ function closeDialog(){
 btnCloseDialog.addEventListener("click", closeDialog);
 btnDoneEntry.addEventListener("click", closeDialog);
 
-btnFullScreenEdition.addEventListener("click", ()=>{
-    if(currentDialogDateStr){
+btnFullscreenEditor.addEventListener("click", () => {
+    if (currentDialogDateStr) {
         window.location.href = `/editor.html?date=${currentDialogDateStr}`;
     }
 });
 
-function triggerAutoSave(){
-    if(!currentDialogDateStr) return;
+function triggerAutoSave() {
+    if (!currentDialogDateStr) return;
 
-    updateCounts(journalInput.value);
+    updateCounts(journalInput.innerHTML);
     saveStatus.textContent = "Saving...";
 
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(async() => {
-        const textVals = journalInput.value;
+    debounceTimer = setTimeout(async () => {
+        const textVals = journalInput.innerHTML;
         const moodVal = selectedMood;
 
         await saveEntry(currentDialogDateStr, textVals, moodVal);
-        lastUpdated.textContent = `Last updated: ${new Date().toLocaleString([], {dateStyle: 'short', timeStyle: 'short'})}`;
 
-        if(textVals.trim() !== ""){
-            entryDates.set(currentDialogDateStr, {text: textVals, mood: moodVal});
-        }else{
+        lastUpdated.textContent = `Last updated: ${new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`;
+
+        if (textVals.trim() !== "") {
+            entryDates.set(currentDialogDateStr, { text: textVals, mood: moodVal });
+        } else {
             entryDates.delete(currentDialogDateStr);
         }
+
         saveStatus.textContent = "Saved";
 
         renderCalendar(currentMonth, currentYear);
+        refreshSidebar(entryDates);
+
+        if (currentDialogDateStr) {
+            initRightPanel(entryDates);
+            setRightPanelDate(currentDialogDateStr, entryDates.get(currentDialogDateStr) || null);
+        }
     }, 500);
 }
 
 journalInput.addEventListener("input", triggerAutoSave);
+
 document.querySelectorAll(".mood-btn").forEach(btn => {
-    btn.addEventListener("click", ()=>{
-        if(selectedMood !== btn.dataset.mood){
+    btn.addEventListener("click", () => {
+        if (selectedMood !== btn.dataset.mood) {
             document.querySelectorAll(".mood-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             selectedMood = btn.dataset.mood;
@@ -219,7 +265,7 @@ document.querySelectorAll(".mood-btn").forEach(btn => {
 });
 
 entryDialog.addEventListener("click", (e) => {
-    if(e.target === entryDialog){
+    if (e.target === entryDialog) {
         closeDialog();
     }
 });
