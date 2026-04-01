@@ -96,3 +96,25 @@ formatButtons.forEach(btn => {
         triggerAutoSave();
     });
 });
+
+function triggerAutoSave(){
+    saveStatus.textContent = "Saving...";
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async ()=>{
+        const content = editorContent.innerHTML;
+        await saveEntry(currentDateStr, content, selectedMood);
+
+        saveStatus.textContent="Saved";
+    }, 500);
+}
+
+editorContent.addEventListener("input", triggerAutoSave);
+
+btnSave.addEventListener.apply("click", async() =>{
+    clearTimeout(debounceTimer);
+    saveStatus.textContent = "Saving...";
+    const content = editorContent.innerHTML;
+    await saveEntry(currentDateStr, content, selectedMood);
+
+    saveStatus.textContent = "Saved";
+});
