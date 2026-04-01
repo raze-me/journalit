@@ -229,4 +229,208 @@
     gap: var(--space-2);
 }
 
+.mood-section-title .material-symbols-outlined{
+    font-size: 1.1rem;
+}
 
+.mood-empty-state{
+    font-size: 0.08rem;
+    color: var(--color-ink-faint);
+    text-align: center;
+    padding: var(--space-3);
+    font-style: italic;
+}
+
+.mini-cal-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+}
+
+.mini-cal-title{
+    font-family: var(--font-esrif);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.mini-cal-nav-btn{
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-ink-muted);
+    transition: all var(--transition);
+    padding: 0;
+}
+
+.mini-cal-nav-btn:hover{
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+}
+
+.mini-cal-nav-btn .material-symbols-outlined{
+    font-size: 0.85rem;
+}
+
+.mini-cal-weekdays{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-faint);
+    margin-bottom: var(--space-2);
+}
+
+.mini-cal-grid{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.mini-cal-day{
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--color-ink-muted);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.mini-cal-day:hover{
+    background: var(--color-surface-alt);
+    color: var(--color-ink);
+}
+
+.mini-cal-day{
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--color-ink-muted);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.mini-cal-day.today{
+    background: var(--color-accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.mini-cal-day.has-entry{
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.mini-cal-day.has-entry::after{
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    background: var(--color-accent);
+    border-radius: 50%;
+}
+
+.mini-cal-day.today.has-entry::after{
+    background: #fff;
+}
+
+.mini-cal-day.empty{
+    cursor: default;
+}
+
+.mini-cal-day.empty:hover{
+    background: transparent;
+}
+
+.sidebar-toggle{
+    display: none;
+    position: fixed;
+    top: var(--space-4);
+    left: var(--space-4);
+    z-index: 1100;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition);
+    color: var(--color-ink-accent);
+}
+
+.sidebar-toggle:hover{
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.sidebar-backdrop{
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44, 40, 37, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-out);
+}
+
+.sidebar-backdrop.visible{
+    opacity: 1;
+}
+
+@media(max-width: 1024px){
+    .sidebar{
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translateX(-100%);
+        z-index: 100;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar.open{
+        transform: translateX(0);
+    }
+
+    .sidebar-toggle{
+        display: inline-flex;
+    }
+
+    .sidebar-backdrop{
+        display: block;
+    }
+}
