@@ -1,0 +1,107 @@
+.right-panel{
+    width: 320px;
+    min-width: 320px;
+    background: var(--color-border);
+    display: flex;
+    border-left: 1px solid var(--color-border);
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+    z-index: 10;
+    box-shadow: -2px 0 16px rgba(44, 40, 37, 0.04);
+    transition: transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+
+.right-panel::webkit-scrollbar{
+    width: 4px;
+}
+
+.right-panel::-webkit-scrollbar-thumb{
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+.rp-state{
+    display: none;
+    flex-direction: column;
+    padding: var(--space-5);
+    gap: var(--space-5);
+    animation: fadeIn 0.4s var(--ease-out);
+}
+
+.rp-state.active{
+    display: flex;
+}
+.rp-section-title{
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-muted);
+    margin-bottom: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.rp-section-title .material-symobols-outlined{
+    font-size: 1.1rem;
+}
+
+.rp-card{
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding-inline: var(--space-4);
+}
+
+.stats-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.stat-box{
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-value{
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    line-height: 1.2;
+}
+
+.stat-label{
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: var(--space-1);
+}
+
+.activity-list{
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.activity-item{
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+
