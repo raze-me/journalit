@@ -109,6 +109,92 @@ function renderDefaultState(){
         }
     }
 
-    
+    const promptEl = document.getElementById("rp-daily-prompt");
+    if(promptEl){
+        const todayDay = new Date().getDate();
+        const prompt = PROMPTS[todayDay % PROMPTS.length];
+        promptEl.textContent = `"${prompt}"`;
+    }
 
+    showState("Defailt");
+}
+
+function renderEntryState(dateStr, entryData){
+    const previewEl = document.getElementById("rp-entry-preview");
+    if(previewEl) previewEl.textContent = getExcerpt(entryData.text, 200);
+
+    const moodEmojiEl = document.getElementById("rp-entry-mood-emoji");
+    const moodLabelEl = document.getElementById("rp-entry-mood-label");
+    const moodClass = entryData.mood || 'neutral';
+
+    if(moodEmojiEl) moodEmojiEl.innerHTML = MOOD_EMOJIS[moodClass] || '<img src="/static/assets/neutral.png" class="mood-icon" alt="neutral">';
+    if(moodLabelEl) moodLabelEl.textContent = moodClass;
+
+    const moodDisplay = document.getElementById("rp-entry-mood-display");
+    if(moodDisplay){
+        const colors = { happy: '#e8f5e9', neutral: '#f5f5f5', sad: '#e3f2fd', angry: '#ffebee' };
+        moodDisplay.style.backgroundColor = colors[moodClass] || colors.neutral;
+    }
+
+    const wcEl = document.getElementById("rp-entry-updated");
+    if(wcEl) wcEl.textContent = `${getWordCount(entryData.text)} words`;
+
+    const updatedEl = document.getElementById("rp-entry-updated");
+    if(updatedEl){
+        if(entryData.updatedAt){
+            const d = new Date(entryData.updatedAt);
+            updatedEl.textContent = d.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short'});
+        } else{
+            updatedEl.textContent = "Unknown";
+        }
+    }
+
+    const editBtn = document.getElementById("rp-btn-edit");
+    if(editBtn){
+        editBtn.onclick = () =>{
+            const event = new CustomEvent("rp-open-date",{detail: {dateStr: dateStr}});
+            window,dispatchEvent(event);
+        };
+    }
+    showState("ENTRY");
+}
+
+function renderEmptyState(dateStr){
+    const writeBtn = document.getElementById("rp-btn-write");
+    if(writeBtn){
+        writeBtn.onclick = ()=>{
+            const event = new CustomEvent("rp-open-date", {detail: {dateStr: dateStr}});
+            window.dispatchEvent(event);
+        };
+    }
+    showState("EMPTY");
+}
+
+export function initRightPanel(entriesMap){
+    allEntriesMap = entriesMap || new Map();
+    if(!currentSelectedDateStr){
+        renderDefaultState();
+    }
+}
+
+export function setRightPanelDate(dateStr, entryData){
+    currentSelectedDateStr = dateStr;
+    currentSelectedEntry = entryData;
+
+    document.querySelectorAll(".rp-selected-date-text").forEach(el =>{
+        const d = new Date(dateStr + "T12:00:00");
+        el.textContent = d.toLocaleDateString(undefined, {weeday: 'long', month: 'short', day: 'numeric', year: 'numeric'});
+    });
+
+    if(entryData && entryData.text && entryData.text.trim().length > 0){
+        renderEntryState(dateStr, entryData);
+    } else{
+        renderEmptyState(dateStr);
+    }
+}
+
+export function clearRightPanelDate(){
+    currentSelectedDateStr = null;
+    currentSelectedEntry = null;
+    renderDefaultState();
 }
