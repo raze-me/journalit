@@ -123,3 +123,124 @@ function renderStreak(entryDates){
     }
 }
 
+function renderMiniCalendar(month, year, entryDates){
+    miniCalMonth = month;
+    miniCalYear = year;
+
+    const titleEl = document.getElementById("mini-cal-month-title");
+    const gridEl = document.getElementById("mini-caal-grid");
+    if(!title || !gridEl) return;
+
+    titleEl.textContent = `${monthShort[month]} ${year}`;
+    const firstDat = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const today = new Date();
+
+    gridEl.innerHTML = "";
+    for(let i=0; i<firstDay; i++){
+        const empty = document.createElement("button");
+        empty.className = "mini-cal-day empty";
+        empty.disabled = true;
+        gridEl.appendChild(empty);
+    }
+
+    for(let d =1; d<= daysInMonth; d++){
+        const btn = document.createElement("button");
+        btn.className = "mini-cal-day";
+        btn.textContent = d;
+
+        const dateStr = formatDateStr(year, month, d);
+
+        if(d === today.getDate() && month === today.getMonth() && year === today.getFullYear){
+            btn.classList.add("today");
+        }
+
+        if(entryDates && entryDates.has(dateStr)){
+            btn.classList.add("has-entry");
+        }
+
+        btn.addEventListener("click", () =>{
+            if(onDateSelectCallback){
+                onDateSelectCallback(year, month, d, dateStr);
+            }
+        });
+
+        gridEl.appendChild(btn);
+    }
+}
+function formatDateStr(year, month, day){
+    const mm = String(month +1).padStart(2, "0");
+    const dd = String(day).padStart(2,"0");
+    return `${year}-${mm}-${dd}`;
+}
+
+function initNavigation(){
+    const navItems = document.querySelectorAll(".sidebar-nav-item");
+    navItems.forEach(item => {
+        item.addEventListener("click", () =>{
+            navItems.forEach(n => n.classList.remove("active"));
+            item.classList.add("active");
+        });
+    });
+}
+
+function initMobileoggle(){
+    const sidebar = document.querySelectorAll(".sidebar");
+    const toggleBtn = document.getElementById("sidebar-toggle");
+    const backdrop = document.getElementById("sidebar-backdrop");
+
+    if(!toggleBtn || !sidebar) return;
+
+    toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        if(backdrop){
+            backdrop.classList.toggle("visible");
+            backdrop.style.display = sidebar.classList.contains("open")? "block" : "none";
+        }
+    });
+
+    if(backdrop){
+        backdrop.addEventListener("click", () =>{
+            sidebar.classList.remove("open");
+            backdrop.classList.remove("visible");
+            setTimeout(()=> { backdrop.style.display = "none";}, 300);
+        });
+    }
+}
+
+function initMiniCalNav(){
+    const prevBtn = document.getElementById("mini-cal-prev");
+    const nextBtn = document.getElementById("mini-cal-next");
+
+    if(prevBtn){
+        prevBtn.addEventListener("click", ()=>{
+            miniCalMonth--;
+            if(miniCalMonth < 0){ miniCalMonth = 11; miniCalYear--}
+            renderMiniCalendar(miniCalMonth, miniCalYear, entryDatesRef);
+        });
+    }
+}
+
+export function initSidebar(entryDates, dateSelectCb){
+    entryDatesRef = entryDates;
+    onDateSelectCallback = dateSelectCb || null;
+
+    const now = new Date();
+    miniCalMonth = now.getMonth();
+    miniCalYear = now.getFullYear();
+
+    initNavigation();
+    initMobileToggle();
+    initMiniCalNav();
+
+    renderMoodSummary(entryDates);
+    renderStreak(entryDates);
+    renderMiniCalendar(miniCalMonth, miniCalYear, entryDates);
+}
+
+export function refreshSidebar(entryDates){
+    entryDatesRef = entryDates;
+    renderMoodSummary(entryDates);
+    renderStreak(entryDates);
+    renderMiniCalendar(miniCalMonth, miniCalYear, entryDates);
+}
