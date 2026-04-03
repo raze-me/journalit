@@ -28,5 +28,4 @@ export function onAuthReady(callback) {
     return onAuthStateChanged(auth, callback);
 }
 
-export { db };
-
+export { db, auth };

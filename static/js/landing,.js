@@ -1,39 +1,40 @@
-import{ signInWithGoogle, onAuthReady} from "./auth.js";
+import { signInWithGoogle, onAuthReady } from "./auth.js";
 
 const googleBtn = document.getElementById("btn-google-signin");
 const statusBox = document.getElementById("auth-status");
 
-function setStatus(message, type = loading){
+function setStatus(message, type = "loading") {
     statusBox.textContent = message;
     statusBox.className = type;
 }
 
-function clearStatus(){
+function clearStatus() {
     statusBox.className = "";
     statusBox.textContent = "";
 }
 
-function setButtonLoading(laoding){
+function setButtonLoading(loading) {
     googleBtn.classList.toggle("is-loading", loading);
     googleBtn.setAttribute("aria-busy", loading);
-    googleBtn.disabled = laoding;
+    googleBtn.disabled = loading;
 }
 
-googleBtn.addEventListener("click", async ()=> {
+googleBtn.addEventListener("click", async () => {
     clearStatus();
     setButtonLoading(true);
-    setStatus("OPening sign-in window.", "loading");
+    setStatus("Opening sign-in window…", "loading");
 
-    try{
-        const{user} = await signInWithGoogle();
-        setStatus(`Welcome back, ${user.displayName || "writter"}`, "success");
-        setTimeout(() =>{
+    try {
+        const { user } = await signInWithGoogle();
+        setStatus(`Welcome back, ${user.displayName || "writer"} ✨`, "success");
+        setTimeout(() => {
             window.location.href = "/dashboard";
         }, 900);
-    } catch(err){
+    } catch (err) {
         setButtonLoading(false);
-        const message ={
-             "auth/popup-closed-by-user": "Sign-in was cancelled.",
+
+        const messages = {
+            "auth/popup-closed-by-user": "Sign-in was cancelled.",
             "auth/popup-blocked": "Popup blocked. Please allow popups for this site.",
             "auth/network-request-failed": "Network error. Check your connection and try again.",
             "auth/cancelled-popup-request": "Another sign-in is already in progress.",
@@ -41,7 +42,7 @@ googleBtn.addEventListener("click", async ()=> {
         };
 
         const code = err?.code ?? "";
-        setStatus(message[code] ?? `Sign-in failed: ${err.message}`, "error");
+        setStatus(messages[code] ?? `Sign-in failed: ${err.message}`, "error");
         console.error("[Journal iT]", err);
     }
 });
@@ -53,26 +54,25 @@ onAuthReady((user) => {
     }
 });
 
-(function drawNotebookLines(){
-    const container = document.querrySelector(".notebook-lines");
-    if(!container) return;
+(function drawNotebookLines() {
+    const container = document.querySelector(".notebook-lines");
+    if (!container) return;
     const lineHeight = 40;
     const count = Math.ceil(window.innerHeight / lineHeight) + 2;
-    for(let i=0; i<count; i++){
+    for (let i = 0; i < count; i++) {
         const line = document.createElement("span");
-        line.style.top =`${i * lineHeight + 20}px`;
+        line.style.top = `${i * lineHeight + 20}px`;
         container.appendChild(line);
     }
 })();
 
 (function setDateStamp() {
-    const el = document.getElementsByID("js-date");
-    if(!el)return;
+    const el = document.getElementById("js-date");
+    if (!el) return;
     el.textContent = new Date().toLocaleDateString("en-US", {
-        weelday: "long",
+        weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric"
     });
 })();
-
